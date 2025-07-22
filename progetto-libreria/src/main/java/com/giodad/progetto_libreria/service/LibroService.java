@@ -4,40 +4,55 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.giodad.progetto_libreria.model.Libro;
+import com.giodad.progetto_libreria.repository.LibroRepository;
 
 @Service
 public class LibroService {
-    private List<Libro> libreria = new ArrayList<>();
-    private Long idCounter = 1L;
+    private final LibroRepository repo;
+
+    @Autowired
+    public LibroService(LibroRepository repo) {
+        this.repo = repo;
+    }
 
     public List<Libro> getLibreria() {
-        return libreria;
+        List<Libro> lista = new ArrayList<>();
+        repo.findAll().forEach(lista::add);
+        return lista;
     }
 
     public Optional<Libro> getById(Long id) {
-        return libreria.stream().filter(l -> l.getId().equals(id)).findFirst();
+        return repo.findById(id);
     }
 
     public Libro create(Libro nuovo) {
-        nuovo.setId(idCounter++);
-        libreria.add(nuovo);
+        repo.save(nuovo);
         return nuovo;
     }
 
     public Optional<Libro> update(Long id, Libro modificato) {
-        return getById(id).map(Libro -> {
-            Libro.setTitolo(modificato.getTitolo());
-            Libro.setAutore(modificato.getAutore());
-            Libro.setPrezzo(modificato.getPrezzo());
-            return Libro;
+        return repo.findById(id).map(l -> {
+            l.setTitolo(modificato.getTitolo());
+            l.setAutore(modificato.getAutore());
+            l.setPrezzo(modificato.getPrezzo());
+            return repo.save(l);
         });
     }
 
     public boolean delete(Long id) {
-        return libreria.removeIf(t -> t.getId().equals(id));
+        if (repo.existsById(id)) {
+            repo.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
 }
+
+
+
+
