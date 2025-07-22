@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 
 
@@ -23,8 +24,10 @@ public class Libro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank(message = "Il titolo non può essere in bianco")
+    @Size(min=3 , max=100 , message = "Lunghezza minima di 3 e lunghezza massima di 100")
     private String titolo;
     @NotBlank(message = "L'autore non può essere in bianco")
+    @Size(min=3 , max=100 , message = "Lunghezza minima di 3 e lunghezza massima di 100")
     private String Autore;
     @NotNull(message = "Il prezzo non può essere in bianco")
     private Double prezzo;
